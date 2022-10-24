@@ -12,6 +12,10 @@ let trouserIndex = 0;
 
 let length;
 
+let jacketCanvas;
+let shirtCanvas;
+let trouserCanvas;
+
 function preload() {
 
     jackets.push(loadImage("./images/jacket-0.png"));
@@ -75,8 +79,15 @@ function setup() {
     length = windowWidth < windowHeight ? windowWidth : windowHeight;
     length *= 2/3;
     createCanvas(length, length, WEBGL);
-
     noStroke();
+
+    jacketCanvas = createGraphics(1080, 720);
+    shirtCanvas = createGraphics(1080, 720);
+    trouserCanvas = createGraphics(1080, 720);
+
+    jacketCanvas.imageMode(CENTER);
+    shirtCanvas.imageMode(CENTER);
+    trouserCanvas.imageMode(CENTER);
 
     for (let element of document.getElementsByClassName("p5Canvas")) {
         element.addEventListener("contextmenu", (e) => e.preventDefault());
@@ -85,11 +96,15 @@ function setup() {
     jacketIndex = int(random(jackets.length));
     shirtIndex = int(random(shirts.length));
     trouserIndex = int(random(trousers.length));
+
+    changeImage(jacketCanvas, jackets[jacketIndex]);
+    changeImage(shirtCanvas, shirts[shirtIndex]);
+    changeImage(trouserCanvas, trousers[trouserIndex]);
 }
 
 function draw() {
 
-    background("#222");
+    background("#fff");
 
     displayJacket();
     displayShirt();
@@ -102,7 +117,7 @@ function displayJacket() {
 
     rotateY(frameCount * 0.001);
 
-    texture(jackets[jacketIndex]);
+    texture(jacketCanvas);
     //sphere(length*6/5);
     cylinder(length*.8, length*2);
 
@@ -126,7 +141,7 @@ function displayShirt() {
     rotateY(frameCount * 0.001 + 30);
     translate(0,-length/6, 0)
 
-    texture(shirts[shirtIndex]);
+    texture(shirtCanvas);
     cylinder(length/6/2*3, length/6*4);
 
     pop();
@@ -139,7 +154,7 @@ function displayTrousers() {
     rotateY(-frameCount * 0.001 + 30);
     translate(0, length/6*3, 0)
 
-    texture(trousers[trouserIndex]);
+    texture(trouserCanvas);
     cylinder(length/6/2*3, length/6*4);
     // translate(0, -length/6*2, 0)
     // cylinder(length/6/2*3 + 2, length/6/3*2);
@@ -166,6 +181,9 @@ function mouseReleased() {
         } else if (jacketIndex < 0) {
             jacketIndex = jackets.length-1;
         }
+
+        changeImage(jacketCanvas, jackets[jacketIndex]);
+
     } else if (mouseY < height/4*3 - length/30) {
 
         if(mouseButton == LEFT) {
@@ -180,6 +198,9 @@ function mouseReleased() {
         } else if (shirtIndex < 0) {
             shirtIndex = shirts.length-1;
         }
+
+        changeImage(shirtCanvas, shirts[shirtIndex]);
+
     } else if (mouseY > height/4*3) {
 
         if(mouseButton == LEFT) {
@@ -194,5 +215,17 @@ function mouseReleased() {
         } else if (trouserIndex < 0) {
             trouserIndex = trousers.length-1;
         }
+
+        changeImage(trouserCanvas, trousers[trouserIndex]);
     }
+}
+
+function changeImage(c, image) {
+
+    c.push();
+    c.translate(1080/2, 720/2);
+    c.image(image, 1080/4, 0);
+    c.scale(-1, 1);
+    c.image(image, 1080/4, 0, 540, 720);
+    c.pop();
 }
